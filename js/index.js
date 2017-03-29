@@ -74,44 +74,104 @@ $(function(){
 		},600);
 	}
 
-  // 全局对象，取到所有字段的值
+  	// 全局对象，取到所有字段的值
 	var temp = {};
-  $(".headingBtn").on("singleTap",function(){
+  	$(".headingBtn").on("singleTap",function(){
 		if (isAnimating) return;
 		last.row = now.row;
 		last.col = now.col;
 		if (last.row != 16) { now.row = last.row+1; now.col = 1; pageMove(towards.up);}
-
 	});
-	//得到大区的字段
-	$(".area").on('singleTap',function(){
-		$(this).css("background","#14c6d0");
-		console.log($(this).html());
-		temp.large_Area = $(this).html();
-	});
+	
+	// 获取职位信息，取得对应的json文件路径
+	function getJobName(){
+		var tag = "讲师";
+		var path = "";
+		switch(tag){
+			case "讲师":
+				path = "json/projectManager.json";
+				break;
+			case "班主任":
+				path = "json/headmaster.json";
+				break;
+			case "就业":
+				path = "json/employmentManager.json";
+				break;
+		}
+		return path;
+	}
+	
+	// 配置大区字段
+	function confBigAreaText(bArea){
+		var areaLength = $(".area").length;
+		for(var i=0;i<areaLength;i++){
+			$($(".area")[i]).html(bArea[i].name);
+		}
+	}
+	// 配置大区字段
+	(function confAllJsonData(){
+		// 大区的数据
+		var p0 = new Promise(function(resolve, reject){
+			$.getJSON("json/jsondata/bigarea.json",function(bArea){
+				resolve(bArea);
+			});
+		});
+		// 学校数据
+		var p1 = new Promise(function(resolve, reject){
+			$.getJSON('json/jsondata/schools.json',function(schools){
+				resolve(schools);
+			})
+		});
+		//专业数据
+		var p2 = new Promise(function(resolve, reject){
+			$.getJSON("json/jsondata/subject.json",function(subs){
+				resolve(subs);
+			});
+		});
+		// 加载题目数据
+		var p3 = new Promise(function(resolve, reject){
+			var jsonpath = getJobName();
+			$.getJSON(jsonpath,function(titles){
+				resolve(titles);
+			});
+		});
+		
+		Promise.all([p0,p1,p2,p3]).then(function(results){
+			// 大区
+			confBigAreaText(results[0]);
+			// 学校
+			schoolChoice(results[1]);
+			// 专业
+			confSubjectText(results[2]);
+			//题目
+			recycleDiv(results[3]);
+		});
+	})();
+	// 配置专业数据
+	var subs = [];
+	function confSubjectText(sub){
+		subs = sub;
+	}
+	
 	//点击大区选项进入校区选项
-
-
 	function schoolChoice(d){
 		$(".area").on("singleTap",function(){
+			// 得到大区的字段
+			console.log($(this).html());
+			temp.large_Area = $(this).html();
+			// 修改选中项的显示颜色
 			$(".area").css({"background":"","color":"#14c6d0"});
 			$(this).css({"background":"#14c6d0","color":"#fff"});
-			/*$(".fakeBox").css("display","none");*/
-			/*$("#confirm").fadeIn(1000);*/
 			$("#confirm").css({"display":"block","background":"#878787"});
-      $(".kuang").show(5000);
+			//显示校区弹框
+      		$(".kuang").show(5000);
 			$("#schools").css({"display":"block"});
-
-			/*$(".page-2-1").css({"background":"#000","opacity":"0.4"});*/
 			$(this).css("display","block");
-			/*$(this).parents('.flex-container').css("display","none");*/
 
 			var index=$(this).index();   //大区的下标
-			//console.log(index);
-			//console.log('d-->'+d);
 			var list="";
 			for(var i=0;i<d[index].length;i++){
-				list+="<li>"+d[index][i]+"</li>" ;
+				list+="<li>"+d[index][i].sch+"</li>"+"<span style='display: none;'>"+d[index][i].subcode+"</span>" ;
 				$("#schools").html(list);
 				$("li").unbind();
 				$("li").on("singleTap",function(){
@@ -120,6 +180,14 @@ $(function(){
 					$("#confirm").css("background-color"," #14c6d0");
 					$("#confirm").unbind();
 					$("#confirm").on("singleTap",function(){
+						// 根据选择的学校，配置专业数据
+						var codes = temp.subcode;
+						for(var i=0;i<codes.length;i++){
+							var sub = subs[codes[i]];
+							$($(".profession")[i]).html(sub);
+							$($(".profession")[i]).show();
+						}
+						// 向上滑动
 						if (isAnimating) return;
 						last.row = now.row;
 						last.col = now.col;
@@ -127,17 +195,14 @@ $(function(){
 					});
 
 					//得到每个校区名字
-					/*alert($(this).html());*/
 					var liIndex = $(this).index();
 					var schoolName=$(this).html();
 					temp.sch_Name = schoolName;
-					/*temp.sch_Name = liIndex;*/
-					//console.log(temp.sch_Name);
+					temp.subcode = $(this).next().html().split(',');
 				})
 			}
 		});
 	}
-	//schoolChoice();
 
 	//点击学校名称页面的×号，关闭页面
 	$(".modal-close-btn").on("singleTap",function(){
@@ -149,7 +214,6 @@ $(function(){
 
 	//得到专业的value值
 	$(".profession").on("singleTap",function(){
-		/*$(this).css("background","#f48268");*/
 		$(".profession").css({"border":"","color":""});
 		$(this).css({"border":"1px solid #14c6d0","color":"#14c6d0"});
 
@@ -205,20 +269,20 @@ $(function(){
 					"tea_Name": temp.tea_Name
 				};
 				postComment(postdata,function(isComment,err){
-					if(err){
+					/*if(err){
 						showbox("网络错误");
 					}else{
 						if(!isComment){
 							showbox("谢谢，您对此老师已经评论过了！");
-						}else{
+						}else{*/
 							//向上滑动到下一页
 							if (isAnimating) return;
 							last.row = now.row;
 							last.col = now.col;
 							if (last.row != 12) { now.row = last.row+1; now.col = 1; pageMove(towards.up);}
 							return true;
-						}
-					}
+						/*}
+					}*/
 				});
 			});
 		}else if(len < 4 || !isMatch()){
@@ -226,8 +290,6 @@ $(function(){
 			//解绑点击事件
 			$(".btn").unbind();
 		}
-		
-		
 	});
 	
 	//ajax请求，判断是否已经评论过了
@@ -303,55 +365,6 @@ $(function(){
 		["noExample","rare","normalInfluence","goodInfluence","rich","oneAndThree"],
 		["never","s","everyDayButNever","everydaySome","everydayAndAlways","accurate"]
 		];
-
-
-
-
-	var tag = "讲师";
-	switch(tag){
-		case "讲师":
-			projectManagerScore();
-			break;
-		case "班主任":
-			masterScore();
-			break;
-		case "就业":
-			employmentManagerScore();
-			break;
-	}
-	//得到后台的json数据
-	function projectManagerScore(){
-		var p1 = new Promise(function(resolve, reject){
-			$.getJSON('json/projectManager.json',function(data){
-				resolve(data);
-			});
-		});
-		var p2 = new Promise(function(resolve, reject){
-			$.getJSON('json/schools.json',function(d){
-				resolve(d);
-			})
-		});
-		Promise.all([p1,p2]).then(function(results){
-			recycleDiv(results[0]);
-			schoolChoice(results[1]);
-		});
-		/*$.getJSON('json/projectManager.json',function(data){
-			recycleDiv(data);
-		});
-		$.getJSON('json/schools.json',function(d){
-			schoolChoice(d);
-		})*/
-	}
-	function masterScore(){
-		$.getJSON('json/headmaster.json',function(data){
-			recycleDiv(data);
-		});
-	}
-	function employmentManagerScore(){
-		$.getJSON('json/employmentManager.json',function(data){
-			recycleDiv(data);
-		});
-	}
 
 	//单选框的name属性取出来循环
 	var nameArr= ["attendance","onClass","questions","answers","tutorAfterClass",
@@ -445,18 +458,6 @@ $(function(){
 			});
 		}
 	}
-	//id的假数据
-	/*function getUrlId(){
-		var wholeAddress=window.location.href;
-		console.log(wholeAddress);
-		var newWholeAddress=wholeAddress.split("?");
-		var idWholeAddress=newWholeAddress[1];
-		var newIdWholeAddress=idWholeAddress.split("=");
-		temp.user_Id=newIdWholeAddress[1];
-		/!*console.log(temp.user_Id instanceof Array);
-		 console.log(temp.user_Id);*!/
-	}
-	getUrlId();*/
 	//全部提交按钮，传输数据
 	$(".lastSubmit").click(function(){
 		//如果建议没有填的话，传空字符传上去
@@ -467,12 +468,9 @@ $(function(){
 		for(var js2 in temp){
 			jslength++;
 		}
+		// 删除专业代码属性
+		delete temp.subcode;
 		console.log(temp);
-		//向上滑动
-		if (isAnimating) return;
-		last.row = now.row;
-		last.col = now.col;
-		if (last.row != 12) { now.row = last.row+1; now.col = 1; pageMove(towards.up);}
 		var url="SaveServlet";
 		$.ajax({
 			async:false,

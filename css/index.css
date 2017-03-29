@@ -315,6 +315,7 @@ body{
 	border:1px solid #c7c7c7;
 	height:7%;
 	color:#4d4d4d;
+	display: none;
 }
 .professionBtn{
 	width:100%;
@@ -327,7 +328,7 @@ body{
 	font-size:0.7rem;
 	font-weight:900;
 	text-align:center;
-	margin-top:98%;
+	margin-top:120%;
 	transition: 0.5s ease;
 }
 .btn{
