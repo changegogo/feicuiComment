@@ -269,20 +269,21 @@ $(function(){
 					"tea_Name": temp.tea_Name
 				};
 				postComment(postdata,function(isComment,err){
-					/*if(err){
+					if(err){
 						showbox("网络错误");
 					}else{
-						if(!isComment){
+						isComment = Number.parseInt(isComment)
+						if(isComment == 0){
 							showbox("谢谢，您对此老师已经评论过了！");
-						}else{*/
+						}else{
 							//向上滑动到下一页
 							if (isAnimating) return;
 							last.row = now.row;
 							last.col = now.col;
 							if (last.row != 12) { now.row = last.row+1; now.col = 1; pageMove(towards.up);}
 							return true;
-						/*}
-					}*/
+						}
+					}
 				});
 			});
 		}else if(len < 4 || !isMatch()){
