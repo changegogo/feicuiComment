@@ -17,7 +17,6 @@
 		 if (!isWeixin) {
 		 document.head.innerHTML = '<title>抱歉，出错了</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0"><link rel="stylesheet" type="text/css" href="https://res.wx.qq.com/open/libs/weui/0.4.1/weui.css">';
 		 document.body.innerHTML = '<div class="weui_msg"><div class="weui_icon_area"><i class="weui_icon_info weui_icon_msg"></i></div><div class="weui_text_area"><h4 class="weui_msg_title">请在微信客户端打开链接</h4></div></div>';
-
 		 }*/
 
 	</script>
@@ -83,7 +82,7 @@
 				<!--班级最大框-->
 				<div class="classContainer">
 					<div class="inputAndCloseBtn1">
-						<input id="classInput" class="inp" type="text" placeholder="班级"/>
+						<input id="classInput" class="inp"  maxlength="15" type="text" placeholder="班级"/>
 						<span class="closeBtn1">X</span>
 					</div>
 					<div class="classList classListOne">
@@ -164,7 +163,7 @@
 		<div class="wrap flex-container">
 			<h2 class="page-title">您的宝贵建议和意见</h2>
 			<textarea name="" id="suggestions" ></textarea>
-			<div class="lastSubmit pt-page-rotateInNewspaper">全部提交</div>
+			<div class="lastSubmit <!-- pt-page-rotateInNewspaper-->">全部提交</div>
 		</div>
 	</div>
 	<!--<div class="page page-16-1 hide">

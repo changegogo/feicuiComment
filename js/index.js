@@ -232,10 +232,12 @@ $(function(){
 
 	//点击学校名称页面的×号，关闭页面
 	$(".modal-close-btn").on("singleTap",function(){
-		$("#schools").css("display","none");
-		$(".kuang").css("display","none");
-		$("#confirm").css("display","none");
-		$("#confirm").unbind();
+		setTimeout(function(){
+			$("#schools").css("display","none");
+			$(".kuang").css("display","none");
+			$("#confirm").css("display","none");
+			$("#confirm").unbind();
+		},300);
 	});
 
 	//得到专业的value值
