@@ -131,11 +131,11 @@ $(function(){
 		// 加载学员之前评论过的老师班级数据
 		var p3 = new Promise(function(resolve, reject){
 			// TODO
-			$.getJSON("json/teacherNameClassList.json",function(tcs){
+			/*$.getJSON("json/teacherNameClassList.json",function(tcs){
 				resolve(tcs);
-			});
+			});*/
 			
-			/*$.ajax({
+			$.ajax({
 				async:false,
 				method:"GET",
 				traditional:true,
@@ -144,9 +144,10 @@ $(function(){
 					resolve(tcs);
 				},
 				error: function(err){
-				
+					var tcs = '{"classList":[],"teacherName":[]}';
+					resolve(tcs);
 				}
-			});*/
+			});
 		});
 		
 		Promise.all([p0,p1,p2,p3]).then(function(results){
@@ -341,20 +342,20 @@ $(function(){
 		//在这里发送ajax请求给后台，判断是否已经评论过了
 		//类型
 		if(typeValue == "讲师"){
-			temp.role_Leve = 0;
+			temp.role_Level = 0;
 		}else if(typeValue == "班主任"){
-			temp.role_Leve = 1;
+			temp.role_Level = 1;
 		}
-		//tmp.role_Level = typeValue;
 		//得到班级的名字
 		temp.stu_Class=$("#classInput").val();
 		//得到教师的名字
 		temp.tea_Name = $("#uName").val();
 		var postdata = {
-			"large_Area": temp.large_Area,
-			"sch_Name": temp.sch_Name,
-			"cus_Name": temp.cus_Name,
-			"tea_Name": temp.tea_Name
+			"large_Area": temp.large_Area, // 大区字段
+			"sch_Name": temp.sch_Name, //学校字段
+			"cus_Name": temp.cus_Name, // 专业字段
+			"tea_Name": temp.tea_Name, // 老师姓名字段
+			"role_Level": temp.role_Level // 类型字段
 		};
 		postComment(postdata,function(isComment,err){
 			if(err){
