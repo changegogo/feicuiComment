@@ -134,6 +134,19 @@ $(function(){
 			$.getJSON("json/teacherNameClassList.json",function(tcs){
 				resolve(tcs);
 			});
+			
+			/*$.ajax({
+				async:false,
+				method:"GET",
+				traditional:true,
+				url: "recentServlet",
+				success:function(tcs){
+					resolve(tcs);
+				},
+				error: function(err){
+				
+				}
+			});*/
 		});
 		
 		Promise.all([p0,p1,p2,p3]).then(function(results){
@@ -288,7 +301,8 @@ $(function(){
 			$(".btn").css("background","#14c6d0");
 			//解绑点击事件
 			$(".btn").unbind();
-			$(".btn").click(lightBtnAndAjax);
+			//$(".btn").click(lightBtnAndAjax);
+			$(".btn").on("singleTap",lightBtnAndAjax);
 			
 		}else if(len < 4 || !isMatch()){
 			$(".btn").css("background","#ccc");
@@ -309,7 +323,8 @@ $(function(){
 				$(".btn").css("background","#14c6d0");
 				//解绑点击事件
 				$(".btn").unbind();
-				$(".btn").click(lightBtnAndAjax);
+				//$(".btn").click(lightBtnAndAjax);
+				$(".btn").on("singleTap",lightBtnAndAjax);
 			}
 		}
 	});
@@ -457,7 +472,7 @@ $(function(){
 		
 		for(var h= 0;h<nameArr.length;h++){
 			var arrStr=nameArr[h];
-			$("input[name ="+arrStr+"]").click(radioClickEvent);
+			$("input[name ="+arrStr+"]").on("singleTap",radioClickEvent);
 		}
 	}
 	// 点击单选框触发事件
@@ -541,7 +556,7 @@ $(function(){
 		}
 	}
 	//全部提交按钮，传输数据
-	$(".lastSubmit").click(function(){
+	$(".lastSubmit").on("singleTap",function(){
 		//如果建议没有填的话，传空字符传上去
 		if(!(temp.stu_Advice)){
 			temp.stu_Advice = "";
@@ -591,7 +606,7 @@ $(function(){
 	});
 	
 	// 返回第一屏
-	$(".returnFirstPage").click(function(){
+	$(".returnFirstPage").on("singleTap",function(){
 		window.location="index.html?r="+Math.random();
 		
 	});
@@ -666,7 +681,7 @@ $(function(){
 	}
 	
 	/***第四屏姓名输入框+班级输入框**/	
-	$(".classListOne span").click(function(){
+	$(".classListOne span").on("singleTap",function(){
 		$("#classInput").val($(this).html());
 		
 		if($("#uName").val()!=""){
@@ -674,18 +689,18 @@ $(function(){
 			$(".btn").css("background","#14c6d0");
 			//解绑点击事件
 			$(".btn").unbind();
-			$(".btn").click(lightBtnAndAjax);
+			$(".btn").on("singleTap",lightBtnAndAjax);
 		}
 	});
 	
-	$(".nameList span").click(function(){
+	$(".nameList span").on("singleTap",function(){
 		$("#uName").val($(this).html());
 		if($("#classInput").val()!=""){
 			//点亮下方按钮
 			$(".btn").css("background","#14c6d0");
 			//解绑点击事件
 			$(".btn").unbind();
-			$(".btn").click(lightBtnAndAjax);
+			$(".btn").on("singleTap",lightBtnAndAjax);
 		}
 	});
 
@@ -699,8 +714,8 @@ $(function(){
 			$("#uName").val("");
 		}
 	}
-	$(".closeBtn1").click(clearInputValue);
-	$(".closeBtn2").click(clearInputValue);
+	$(".closeBtn1").on("singleTap",clearInputValue);
+	$(".closeBtn2").on("singleTap",clearInputValue);
 });
 
 

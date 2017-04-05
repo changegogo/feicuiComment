@@ -112,7 +112,7 @@ body{
 
 .modal-close-btn:hover{
 	opacity: 1;
-	animation:rotateCloseBtn 1s;
+	animation:rotateCloseBtn 0.5s;
 }
 @keyframes rotateCloseBtn {
 	0%{
