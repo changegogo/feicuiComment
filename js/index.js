@@ -129,6 +129,14 @@
 			});
 		});
 		var p3 = new Promise(function(resolve, reject){
+<<<<<<< HEAD
+=======
+			// TODO
+			/*$.getJSON("json/teacherNameClassList.json",function(tcs){
+				resolve(tcs);
+			});*/
+			
+>>>>>>> 1c9e15c05a1a961689d5ccde3ad26c4b54c0ce51
 			$.ajax({
 				async:false,
 				method:"POST",
