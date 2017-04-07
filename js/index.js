@@ -1,4 +1,4 @@
-$(function(){
+﻿$(function(){
 	window.onload = function(){
 		document.documentElement.style.fontSize = document.documentElement.clientWidth/10.8 +'px';
 		var deviceWidth = document.documentElement.clientWidth;
@@ -128,25 +128,23 @@ $(function(){
 				resolve(subs);
 			});
 		});
-		// 加载学员之前评论过的老师班级数据
 		var p3 = new Promise(function(resolve, reject){
-			// TODO
-			$.getJSON("json/teacherNameClassList.json",function(tcs){
-				resolve(tcs);
-			});
-			
-			/*$.ajax({
+			$.ajax({
 				async:false,
-				method:"GET",
+				method:"POST",
 				traditional:true,
-				url: "recentServlet",
-				success:function(tcs){
-					resolve(tcs);
+				url:"recentServlet",
+				data: {
+				},
+				async:true,
+				success: function(data){
+					resolve(data);
 				},
 				error: function(err){
-				
+					var tcs = '{"classList":[],"teacherName":[]}';
+					resolve(tcs);
 				}
-			});*/
+			});
 		});
 		
 		Promise.all([p0,p1,p2,p3]).then(function(results){
@@ -161,8 +159,25 @@ $(function(){
 			
 		});
 	})();
+
+	//去除数组中的空值
+	function deleteNulVal(array){
+		for(var i = 0 ;i<array.length;i++)
+	 	{
+            if(array[i] == "" || typeof(array[i]) == "undefined")
+            {
+                array.splice(i,1);
+                i= i-1;
+            }       
+	 	}
+	}
 	
 	function updateClassAndTeaName(tcs){
+		tcs = JSON.parse(tcs);
+		// 删除空值
+		deleteNulVal(tcs.classList);
+		// 反转数组
+		tcs.classList.reverse();
 		var classSpans = $(".classListOne span");
 		var min = Math.min(tcs.classList.length,classSpans.length);
 		for(var i=0;i<min;i++){
@@ -174,6 +189,8 @@ $(function(){
 				$(classSpans[i]).hide();
 			}
 		}
+		deleteNulVal(tcs.teacherName);
+		tcs.teacherName.reverse();
 		var teaNameSpans = $(".nameList span");
 		min = Math.min(tcs.teacherName.length,teaNameSpans.length);
 		for(var i=0;i<min;i++){
@@ -301,8 +318,7 @@ $(function(){
 			$(".btn").css("background","#14c6d0");
 			//解绑点击事件
 			$(".btn").unbind();
-			//$(".btn").click(lightBtnAndAjax);
-			$(".btn").on("singleTap",lightBtnAndAjax);
+			$(".btn").click(lightBtnAndAjax);
 			
 		}else if(len < 4 || !isMatch()){
 			$(".btn").css("background","#ccc");
@@ -323,8 +339,7 @@ $(function(){
 				$(".btn").css("background","#14c6d0");
 				//解绑点击事件
 				$(".btn").unbind();
-				//$(".btn").click(lightBtnAndAjax);
-				$(".btn").on("singleTap",lightBtnAndAjax);
+				$(".btn").click(lightBtnAndAjax);
 			}
 		}
 	});
@@ -341,20 +356,20 @@ $(function(){
 		//在这里发送ajax请求给后台，判断是否已经评论过了
 		//类型
 		if(typeValue == "讲师"){
-			temp.role_Leve = 0;
+			temp.role_Level = 0;
 		}else if(typeValue == "班主任"){
-			temp.role_Leve = 1;
+			temp.role_Level = 1;
 		}
-		//tmp.role_Level = typeValue;
 		//得到班级的名字
 		temp.stu_Class=$("#classInput").val();
 		//得到教师的名字
 		temp.tea_Name = $("#uName").val();
 		var postdata = {
-			"large_Area": temp.large_Area,
-			"sch_Name": temp.sch_Name,
-			"cus_Name": temp.cus_Name,
-			"tea_Name": temp.tea_Name
+			"large_Area": temp.large_Area, // 大区字段
+			"sch_Name": temp.sch_Name, //学校字段
+			"cus_Name": temp.cus_Name, // 专业字段
+			"tea_Name": temp.tea_Name, // 老师姓名字段
+			"role_Level": temp.role_Level // 类型字段
 		};
 		postComment(postdata,function(isComment,err){
 			if(err){
@@ -472,7 +487,7 @@ $(function(){
 		
 		for(var h= 0;h<nameArr.length;h++){
 			var arrStr=nameArr[h];
-			$("input[name ="+arrStr+"]").on("singleTap",radioClickEvent);
+			$("input[name ="+arrStr+"]").click(radioClickEvent);
 		}
 	}
 	// 点击单选框触发事件
@@ -555,8 +570,9 @@ $(function(){
 			});
 		}
 	}
+	//TODO
 	//全部提交按钮，传输数据
-	$(".lastSubmit").on("singleTap",function(){
+	$(".lastSubmit").click(function(){
 		//如果建议没有填的话，传空字符传上去
 		if(!(temp.stu_Advice)){
 			temp.stu_Advice = "";
@@ -606,7 +622,7 @@ $(function(){
 	});
 	
 	// 返回第一屏
-	$(".returnFirstPage").on("singleTap",function(){
+	$(".returnFirstPage").click(function(){
 		window.location="index.html?r="+Math.random();
 		
 	});
@@ -681,7 +697,7 @@ $(function(){
 	}
 	
 	/***第四屏姓名输入框+班级输入框**/	
-	$(".classListOne span").on("singleTap",function(){
+	$(".classListOne span").click(function(){
 		$("#classInput").val($(this).html());
 		
 		if($("#uName").val()!=""){
@@ -689,18 +705,18 @@ $(function(){
 			$(".btn").css("background","#14c6d0");
 			//解绑点击事件
 			$(".btn").unbind();
-			$(".btn").on("singleTap",lightBtnAndAjax);
+			$(".btn").click(lightBtnAndAjax);
 		}
 	});
 	
-	$(".nameList span").on("singleTap",function(){
+	$(".nameList span").click(function(){
 		$("#uName").val($(this).html());
 		if($("#classInput").val()!=""){
 			//点亮下方按钮
 			$(".btn").css("background","#14c6d0");
 			//解绑点击事件
 			$(".btn").unbind();
-			$(".btn").on("singleTap",lightBtnAndAjax);
+			$(".btn").click(lightBtnAndAjax);
 		}
 	});
 
@@ -714,8 +730,8 @@ $(function(){
 			$("#uName").val("");
 		}
 	}
-	$(".closeBtn1").on("singleTap",clearInputValue);
-	$(".closeBtn2").on("singleTap",clearInputValue);
+	$(".closeBtn1").click(clearInputValue);
+	$(".closeBtn2").click(clearInputValue);
 });
 
 
